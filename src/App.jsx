@@ -1,16 +1,37 @@
 import React from "react";
-import MapboxMap from "./components/MapboxMap";
-import Mapbox3DMap from "./components/Mapbox3DMap";
-import Mapbox3DWithPolygon from "./components/Mapbox3DWithPolygon";
 import Mapbox3DExampleWithPolygonAndMarkers from "./components/Mapbox3DExampleWithPolygonAndMarkers ";
+
+const center = [-74.0066, 40.7135];
+const polygonCoordinatesArray = [
+  [
+    [-74.007, 40.7133],
+    [-74.006, 40.7133],
+    [-74.006, 40.7143],
+    [-74.007, 40.7143],
+    [-74.007, 40.7133],
+  ],
+  [
+    [-74.006, 40.7128],
+    [-74.005, 40.7128],
+    [-74.005, 40.7138],
+    [-74.006, 40.7138],
+    [-74.006, 40.7128],
+  ],
+];
+const markerCoordinates = [
+  { coordinates: [-74.0066, 40.7135], image: "/police-car.png" },
+  { coordinates: [-74.007, 40.7145], image: "/ambulance.png" },
+  // Add more marker data as needed
+];
 
 function App() {
   return (
     <>
-      {/* <MapboxMap /> */}
-      {/* <Mapbox3DMap /> */}
-      {/* <Mapbox3DWithPolygon /> */}
-      <Mapbox3DExampleWithPolygonAndMarkers />
+      <Mapbox3DExampleWithPolygonAndMarkers
+        center={center}
+        polygonCoordinatesArray={polygonCoordinatesArray}
+        markerCoordinates={markerCoordinates}
+      />
     </>
   );
 }

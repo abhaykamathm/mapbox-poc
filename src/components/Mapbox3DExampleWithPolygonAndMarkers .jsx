@@ -1,132 +1,37 @@
+// Mapbox3DExampleWithPolygonAndMarkers.js
 import React, { useEffect } from "react";
-import mapboxgl from "mapbox-gl";
-
+import initializeMap from "../utils/mapInitialization";
+import { addBuildingsLayer, addPolygonLayer } from "../utils/mapLayers";
+import addMarkers from "../utils/mapMarkers";
 import "mapbox-gl/dist/mapbox-gl.css";
 
-const Mapbox3DExampleWithPolygonAndMarkers = () => {
+const Mapbox3DExampleWithPolygonAndMarkers = ({
+  center,
+  polygonCoordinatesArray,
+  markerCoordinates,
+}) => {
   useEffect(() => {
-    mapboxgl.accessToken =
-      "pk.eyJ1IjoiYWJoYXlrYW1hdGgiLCJhIjoiY2xxeXRrNDVtMHJ0NDJqcG5odWRsY3Z2YyJ9.dSht3qpJBEBgb9Zi3uiVIQ";
-
-    const map = new mapboxgl.Map({
-      style: "mapbox://styles/mapbox/light-v11",
-      center: [-74.0066, 40.7135],
-      zoom: 15.5,
-      pitch: 45,
-      bearing: -17.6,
-      container: "map",
-      antialias: true,
-    });
+    const map = initializeMap({ center });
 
     map.on("style.load", () => {
-      const layers = map.getStyle().layers;
-      const labelLayerId = layers.find(
-        (layer) => layer.type === "symbol" && layer.layout["text-field"]
-      ).id;
+      addBuildingsLayer(map);
 
-      // Add 3D buildings layer
-      map.addLayer({
-        id: "add-3d-buildings",
-        source: "composite",
-        "source-layer": "building",
-        filter: ["==", "extrude", "true"],
-        type: "fill-extrusion",
-        minzoom: 15,
-        paint: {
-          "fill-extrusion-color": "#aaa",
-          "fill-extrusion-height": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            15,
-            0,
-            15.05,
-            ["get", "height"],
-          ],
-          "fill-extrusion-base": [
-            "interpolate",
-            ["linear"],
-            ["zoom"],
-            15,
-            0,
-            15.05,
-            ["get", "min_height"],
-          ],
-          "fill-extrusion-opacity": 0.6,
-        },
-      });
-
-      // Add a polygon
-      map.addSource("polygon", {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          geometry: {
-            type: "Polygon",
-            coordinates: [
-              [
-                [-74.007, 40.7128],
-                [-74.006, 40.7128],
-                [-74.006, 40.7138],
-                [-74.007, 40.7158],
-                [-74.007, 40.7128],
-              ],
-            ],
-          },
-        },
-      });
-
-      map.addLayer({
-        id: "polygon",
-        type: "fill",
-        source: "polygon",
-        paint: {
-          "fill-color": "#ff0000",
-          "fill-opacity": 0.5,
-        },
-      });
-
-      // Add markers
-      map.loadImage("/police-car.png", (error, image) => {
-        if (error) throw error;
-
-        map.addImage("custom-marker", image);
-
-        // Add marker coordinates
-        map.addSource("markers", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [
-              {
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [-74.0066, 40.7135],
-                },
-              },
-              // Add more features as needed
-            ],
-          },
+      // Add multiple polygons
+      if (polygonCoordinatesArray && polygonCoordinatesArray.length > 0) {
+        polygonCoordinatesArray.forEach((polygonCoordinates, index) => {
+          addPolygonLayer(map, polygonCoordinates, `polygon${index}`);
         });
+      }
 
-        map.addLayer({
-          id: "markers",
-          type: "symbol",
-          source: "markers",
-          layout: {
-            "icon-image": "custom-marker",
-            "icon-allow-overlap": true,
-            "icon-size": 0.5,
-          },
-          paint: {},
-        });
-      });
+      // Add multiple markers
+      if (markerCoordinates && markerCoordinates.length > 0) {
+        addMarkers(map, markerCoordinates);
+      }
     });
 
     // Clean up the map on component unmount
     return () => map.remove();
-  }, []);
+  }, [center, polygonCoordinatesArray, markerCoordinates]);
 
   return (
     <div
