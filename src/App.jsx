@@ -1,5 +1,5 @@
 import React from "react";
-import Mapbox3DExampleWithPolygonAndMarkers from "./components/Mapbox3DExampleWithPolygonAndMarkers ";
+import Mapbox3DExampleWithPolygonAndMarkers from "./components/Mapbox";
 
 const center = [-74.0066, 40.7135];
 const polygonCoordinatesArray = [
